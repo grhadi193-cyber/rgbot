@@ -2,450 +2,570 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>چت‌بات ره نگار گستر</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: fixed;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: #1a1a1a;
+            font-family: 'Vazirmatn', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
         }
 
-        .chat-container {
-            width: 100%;
-            height: 100%;
+        .container {
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
             display: flex;
             flex-direction: column;
-            background: #1e1e1e;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #ED2F42, transparent);
+            top: -150px;
+            right: -150px;
+            animation: float 15s infinite;
+        }
+
+        .bg-animation::after {
+            content: '';
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, #ED2F42, transparent);
+            bottom: -125px;
+            left: -125px;
+            animation: float 20s infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 50px) scale(1.2); }
         }
 
         /* Header */
-        .chat-header {
-            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-            padding: 12px 15px;
-            border-bottom: 2px solid #ED2F42;
-            flex-shrink: 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        .header {
+            background: linear-gradient(135deg, #1f1f1f, #141414);
+            padding: 20px;
+            border-bottom: 3px solid #ED2F42;
+            box-shadow: 0 4px 20px rgba(237, 47, 66, 0.2);
+            z-index: 10;
+            position: relative;
         }
 
         .header-content {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .logo {
+        .bot-avatar {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #ED2F42 0%, #ff1744 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 8px 25px rgba(237, 47, 66, 0.5);
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 8px 25px rgba(237, 47, 66, 0.5); }
+            50% { box-shadow: 0 8px 35px rgba(237, 47, 66, 0.8); }
+        }
+
+        .header-info h1 {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .online-dot {
+            width: 10px;
+            height: 10px;
+            background: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #00ff88;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        .header-info p {
+            color: #888;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px 20px;
+            position: relative;
+            background: #0f0f0f;
+        }
+
+        .chat-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ED2F42, #c72537);
+            border-radius: 10px;
+        }
+
+        .chat-area::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        /* Messages */
+        .msg {
+            display: flex;
+            margin-bottom: 20px;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .msg.user {
+            justify-content: flex-end;
+        }
+
+        .msg-avatar {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #ED2F42, #c72537);
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
             flex-shrink: 0;
-            box-shadow: 0 3px 10px rgba(237, 47, 66, 0.4);
         }
 
-        .header-text {
-            flex: 1;
-            min-width: 0;
+        .msg.bot .msg-avatar {
+            background: linear-gradient(135deg, #ED2F42, #c72537);
+            margin-left: 10px;
         }
 
-        .header-text h1 {
-            color: #fff;
+        .msg.user .msg-avatar {
+            background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
+            margin-right: 10px;
+        }
+
+        .msg-bubble {
+            max-width: 70%;
+            padding: 14px 18px;
+            border-radius: 18px;
             font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .header-text p {
-            color: #999;
-            font-size: 11px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #4ade80;
-            border-radius: 50%;
-            display: inline-block;
-            margin-left: 5px;
-            box-shadow: 0 0 8px #4ade80;
-        }
-
-        /* Messages */
-        .messages-container {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 15px;
-            background: #1e1e1e;
-        }
-
-        .message {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            align-items: flex-end;
-        }
-
-        .message.user {
-            flex-direction: row-reverse;
-        }
-
-        .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .message.bot .avatar {
-            background: linear-gradient(135deg, #ED2F42, #c72537);
-        }
-
-        .message.user .avatar {
-            background: linear-gradient(135deg, #4a4a4a, #2d2d2d);
-        }
-
-        .message-content {
-            max-width: 75%;
-            padding: 10px 14px;
-            border-radius: 14px;
-            font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
             word-wrap: break-word;
+            position: relative;
         }
 
-        .message.bot .message-content {
-            background: #2d2d2d;
-            color: #e5e5e5;
+        .msg.bot .msg-bubble {
+            background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+            color: #f0f0f0;
             border: 1px solid rgba(237, 47, 66, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
 
-        .message.user .message-content {
+        .msg.user .msg-bubble {
             background: linear-gradient(135deg, #ED2F42, #c72537);
-            color: white;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(237, 47, 66, 0.5);
         }
 
-        /* Typing */
-        .typing-indicator {
+        /* Typing Animation */
+        .typing {
             display: none;
-            gap: 4px;
-            padding: 10px 14px;
-            background: #2d2d2d;
-            border-radius: 14px;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+            border-radius: 18px;
             width: fit-content;
         }
 
-        .typing-indicator span {
-            width: 6px;
-            height: 6px;
-            background: #ED2F42;
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
+        .typing-dots {
+            display: flex;
+            gap: 6px;
         }
 
-        .typing-indicator span:nth-child(2) {
+        .typing-dots span {
+            width: 9px;
+            height: 9px;
+            background: #ED2F42;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
             animation-delay: 0.2s;
         }
 
-        .typing-indicator span:nth-child(3) {
+        .typing-dots span:nth-child(3) {
             animation-delay: 0.4s;
         }
 
-        @keyframes typing {
+        @keyframes bounce {
             0%, 60%, 100% {
                 transform: translateY(0);
-                opacity: 0.7;
             }
             30% {
-                transform: translateY(-6px);
-                opacity: 1;
+                transform: translateY(-12px);
             }
         }
 
-        /* Input */
-        .input-container {
-            padding: 10px 15px 10px;
-            background: #1a1a1a;
-            border-top: 1px solid #2d2d2d;
-            flex-shrink: 0;
+        /* Welcome */
+        .welcome {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .welcome-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: wave 2s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(20deg); }
+            75% { transform: rotate(-20deg); }
+        }
+
+        .welcome h2 {
+            color: #ED2F42;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .welcome p {
+            color: #999;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a, #141414);
+            border-top: 1px solid #2a2a2a;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .input-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
-            gap: 8px;
-            align-items: center;
-            background: #2d2d2d;
-            border-radius: 20px;
-            padding: 5px 5px 5px 15px;
+            gap: 12px;
+            background: #242424;
+            padding: 8px;
+            border-radius: 28px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
         }
 
-        #userInput {
+        .input-wrapper:focus-within {
+            border-color: #ED2F42;
+            box-shadow: 0 0 0 4px rgba(237, 47, 66, 0.15);
+        }
+
+        #chatInput {
             flex: 1;
             background: transparent;
             border: none;
             outline: none;
-            color: #e5e5e5;
-            font-size: 14px;
-            padding: 8px 0;
+            color: #fff;
+            font-size: 15px;
+            padding: 12px 16px;
+            font-family: 'Vazirmatn', sans-serif;
         }
 
-        #userInput::placeholder {
+        #chatInput::placeholder {
             color: #666;
         }
 
         #sendBtn {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #ED2F42, #c72537);
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #ED2F42, #ff1744);
             border: none;
             border-radius: 50%;
-            color: white;
-            font-size: 18px;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
-            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(237, 47, 66, 0.4);
         }
 
-        #sendBtn:active:not(:disabled) {
-            transform: scale(0.9);
+        #sendBtn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 25px rgba(237, 47, 66, 0.6);
+        }
+
+        #sendBtn:active {
+            transform: scale(0.95);
         }
 
         #sendBtn:disabled {
             opacity: 0.5;
-        }
-
-        /* Welcome */
-        .welcome-message {
-            text-align: center;
-            padding: 30px 15px;
-            color: #999;
-        }
-
-        .welcome-message h2 {
-            color: #ED2F42;
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .welcome-message p {
-            font-size: 14px;
-            line-height: 1.6;
+            cursor: not-allowed;
+            transform: scale(1);
         }
 
         /* Desktop */
         @media (min-width: 768px) {
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            .container {
+                max-width: 900px;
+                height: 90vh;
+                border-radius: 24px;
+                box-shadow: 0 20px 80px rgba(0, 0, 0, 0.8);
             }
 
-            .chat-container {
-                width: 90%;
-                max-width: 800px;
-                height: 85vh;
-                border-radius: 20px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            .header {
+                border-radius: 24px 24px 0 0;
             }
 
-            .chat-header {
-                border-radius: 20px 20px 0 0;
-                padding: 20px 25px;
+            .msg-bubble {
+                max-width: 60%;
+            }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 767px) {
+            .header {
+                padding: 16px;
             }
 
-            .logo {
-                width: 50px;
-                height: 50px;
+            .bot-avatar {
+                width: 48px;
+                height: 48px;
                 font-size: 24px;
             }
 
-            .header-text h1 {
-                font-size: 20px;
+            .header-info h1 {
+                font-size: 16px;
             }
 
-            .header-text p {
-                font-size: 13px;
+            .chat-area {
+                padding: 20px 15px;
             }
 
-            .messages-container {
-                padding: 25px;
+            .msg-bubble {
+                max-width: 80%;
+                font-size: 14px;
+                padding: 12px 16px;
             }
 
-            .message {
-                margin-bottom: 15px;
-            }
-
-            .avatar {
-                width: 38px;
-                height: 38px;
+            .msg-avatar {
+                width: 36px;
+                height: 36px;
                 font-size: 18px;
             }
 
-            .message-content {
-                max-width: 65%;
-                padding: 12px 18px;
-                font-size: 15px;
-            }
-
-            .input-container {
-                padding: 20px 25px;
-            }
-
-            .input-wrapper {
-                padding: 6px 6px 6px 18px;
-            }
-
-            #userInput {
-                font-size: 15px;
+            .input-area {
+                padding: 15px;
             }
 
             #sendBtn {
-                width: 46px;
-                height: 46px;
+                width: 48px;
+                height: 48px;
                 font-size: 20px;
             }
 
-            #sendBtn:hover:not(:disabled) {
-                transform: scale(1.05);
+            .welcome {
+                padding: 40px 20px;
+            }
+
+            .welcome-icon {
+                font-size: 50px;
+            }
+
+            .welcome h2 {
+                font-size: 20px;
+            }
+
+            .welcome p {
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
+    <div class="container">
+        <div class="bg-animation"></div>
+        
+        <div class="header">
             <div class="header-content">
-                <div class="logo">🤖</div>
-                <div class="header-text">
+                <div class="bot-avatar">🤖</div>
+                <div class="header-info">
                     <h1>
-                        دستیار ره نگار گستر
-                        <span class="status-dot"></span>
+                        دستیار هوشمند ره نگار گستر
+                        <span class="online-dot"></span>
                     </h1>
-                    <p>آنلاین 24/7</p>
+                    <p>پاسخگویی آنی 24/7</p>
                 </div>
             </div>
         </div>
 
-        <div class="messages-container" id="messages">
-            <div class="welcome-message">
-                <h2>👋 سلام!</h2>
-                <p>من دستیار هوشمند ره نگار گستر هستم.<br>چطور می‌تونم کمکتون کنم؟</p>
+        <div class="chat-area" id="chatArea">
+            <div class="welcome">
+                <div class="welcome-icon">👋</div>
+                <h2>به ره نگار گستر خوش آمدید!</h2>
+                <p>سلام! من دستیار هوشمند شما هستم.<br>چطور می‌تونم کمکتون کنم؟</p>
             </div>
         </div>
 
-        <div class="input-container">
+        <div class="input-area">
             <div class="input-wrapper">
                 <input 
                     type="text" 
-                    id="userInput" 
-                    placeholder="پیام بنویسید..."
+                    id="chatInput" 
+                    placeholder="پیام خود را بنویسید..."
                     autocomplete="off"
                 >
-                <button id="sendBtn">➤</button>
+                <button id="sendBtn">
+                    <span>▶</span>
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        const API = 'https://rgbot.n8nsaz.ir/webhook/chatbot';
-        const messages = document.getElementById('messages');
-        const input = document.getElementById('userInput');
-        const btn = document.getElementById('sendBtn');
+        const API_URL = 'https://rgbot.n8nsaz.ir/webhook/chatbot';
+        const chatArea = document.getElementById('chatArea');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
 
-        function addMsg(text, isUser) {
-            const welcome = document.querySelector('.welcome-message');
+        function addMessage(text, isUser) {
+            const welcome = document.querySelector('.welcome');
             if (welcome) welcome.remove();
 
-            const div = document.createElement('div');
-            div.className = `message ${isUser ? 'user' : 'bot'}`;
-            div.innerHTML = `
-                <div class="avatar">${isUser ? '👤' : '🤖'}</div>
-                <div class="message-content">${text}</div>
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${isUser ? 'user' : 'bot'}`;
+            msgDiv.innerHTML = `
+                <div class="msg-avatar">${isUser ? '👤' : '🤖'}</div>
+                <div class="msg-bubble">${text}</div>
             `;
-            messages.appendChild(div);
-            messages.scrollTop = messages.scrollHeight;
+            chatArea.appendChild(msgDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
 
         function showTyping() {
-            const div = document.createElement('div');
-            div.className = 'message bot';
-            div.id = 'typing';
-            div.innerHTML = `
-                <div class="avatar">🤖</div>
-                <div class="typing-indicator" style="display: flex;">
-                    <span></span><span></span><span></span>
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'msg bot';
+            typingDiv.id = 'typing';
+            typingDiv.innerHTML = `
+                <div class="msg-avatar">🤖</div>
+                <div class="typing" style="display: block;">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
                 </div>
             `;
-            messages.appendChild(div);
-            messages.scrollTop = messages.scrollHeight;
+            chatArea.appendChild(typingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
 
         function hideTyping() {
-            const t = document.getElementById('typing');
-            if (t) t.remove();
+            const typing = document.getElementById('typing');
+            if (typing) typing.remove();
         }
 
-        async function send() {
-            const msg = input.value.trim();
-            if (!msg) return;
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
 
-            addMsg(msg, true);
-            input.value = '';
-            btn.disabled = true;
+            addMessage(message, true);
+            chatInput.value = '';
+            sendBtn.disabled = true;
             showTyping();
 
             try {
-                const res = await fetch(API, {
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({chatInput: msg})
+                    body: JSON.stringify({chatInput: message})
                 });
-                const data = await res.json();
+
+                const data = await response.json();
                 hideTyping();
-                addMsg(data.output || 'خطا در دریافت پاسخ', false);
-            } catch (e) {
+
+                if (data.output) {
+                    addMessage(data.output, false);
+                } else {
+                    addMessage('متأسفم، خطایی رخ داد. لطفاً دوباره تلاش کنید.', false);
+                }
+            } catch (error) {
                 hideTyping();
-                addMsg('خطا در ارتباط با سرور', false);
+                addMessage('خطا در برقراری ارتباط. لطفاً بعداً تلاش کنید.', false);
             }
 
-            btn.disabled = false;
-            input.focus();
+            sendBtn.disabled = false;
+            chatInput.focus();
         }
 
-        btn.addEventListener('click', send);
-        input.addEventListener('keypress', e => {
-            if (e.key === 'Enter' && !btn.disabled) send();
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !sendBtn.disabled) {
+                sendMessage();
+            }
         });
 
-        // Prevent zoom
-        document.addEventListener('gesturestart', e => e.preventDefault());
-        document.addEventListener('dblclick', e => e.preventDefault());
+        chatInput.focus();
     </script>
 </body>
 </html>
